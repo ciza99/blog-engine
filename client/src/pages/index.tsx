@@ -3,7 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "context/auth-context";
 
 import { Layout } from "./layout";
-import { Home } from "./home";
+import { Home } from "./home/home";
 import { Login } from "./login";
 import { Articles } from "./articles";
 import { ArticleUpsert } from "./article-upsert";
@@ -21,7 +21,10 @@ export const AppRoutes = () => {
             <>
               <Route path="/articles" element={<Articles />} />
               <Route path="/articles/new" element={<ArticleUpsert />} />
-              <Route path="/articles/:articleId/edit" element={<Articles />} />
+              <Route
+                path="/articles/:articleId/edit"
+                element={<ArticleUpsert />}
+              />
             </>
           ) : (
             <>

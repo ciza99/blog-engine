@@ -1,34 +1,67 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Form, FormProvider, useForm } from "react-hook-form";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { z } from "zod";
+
 import { Button } from "components/button";
 import { ImageField } from "components/form/image-input";
 import { TextArea } from "components/form/text-area";
 import { TextField } from "components/form/text-field";
 import { ArticleDetail, ImageInfo } from "models";
-import { Form, FormProvider, useForm } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
 import { axios } from "utils/axios";
-import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Spinner } from "components/spinner";
 
 type ArticleSchema = z.infer<typeof articleSchema>;
 const articleSchema = z.object({
   title: z.string().min(4),
+  perex: z.string().min(4).nullable(),
   content: z.string().min(4),
   image: z.any(),
 });
 
+const getArticle = (articleId?: string) =>
+  axios.get<ArticleDetail>(`/articles/${articleId}`).then((res) => res.data);
+
 export const ArticleUpsert = () => {
   const { articleId } = useParams<{ articleId: string }>();
+
+  const { data: article } = useQuery({
+    queryKey: ["article", articleId],
+    queryFn: () => getArticle(articleId),
+    enabled: !!articleId,
+  });
+
+  console.log({ articleId, article });
+
+  if (!articleId) {
+    return <ArticleUpsertForm />;
+  }
+
+  if (!article) {
+    return (
+      <div className="grow flex items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
+  return <ArticleUpsertForm article={article} />;
+};
+
+export const ArticleUpsertForm = ({ article }: { article?: ArticleDetail }) => {
+  const { articleId } = useParams<{ articleId: string }>();
   const navigate = useNavigate();
+
   const { mutate: upsertArticle } = useMutation(
     async (data: ArticleSchema) => {
       const formData = new FormData();
       formData.append("image", data.image);
 
       const imageInfo = await axios
-        .post<ImageInfo>("/images", formData)
-        .then((res) => res.data);
-      console.log({ imageInfo });
+        .post<ImageInfo[]>("/images", formData)
+        .then((res) => res.data[0]);
 
       const body: ArticleDetail = {
         title: data.title,
@@ -37,7 +70,7 @@ export const ArticleUpsert = () => {
         imageId: imageInfo.imageId,
       };
       const request = articleId
-        ? axios.patch<ArticleDetail>(`/articles${articleId}`, body)
+        ? axios.patch<ArticleDetail>(`/articles/${articleId}`, body)
         : axios.post<ArticleDetail>("/articles", body);
       return request.then((res) => res.data);
     },
@@ -53,11 +86,12 @@ export const ArticleUpsert = () => {
 
   const methods = useForm({
     defaultValues: {
-      title: "",
-      perex: "",
-      content: "",
+      title: article?.title ?? "",
+      perex: article?.perex ?? "",
+      content: article?.content ?? "",
       image: "",
     },
+    resolver: zodResolver(articleSchema),
   });
 
   return (

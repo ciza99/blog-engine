@@ -1,15 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 
-import { ArticleList } from "models";
-import { axios } from "utils/axios";
 import { Spinner } from "components/spinner";
-
-const getArticleList = async (page: number) => {
-  return axios
-    .get<ArticleList>(`/articles?page=${page}`)
-    .then((res) => res.data);
-};
+import { getArticleList } from "api/api";
+import { ArticleDetail } from "models";
+import { BASE_URL } from "constants";
+import { FaCircle } from "react-icons/fa6";
 
 export const Home = () => {
   const { page: pageQuery } = useParams<{ page: string }>();
@@ -30,11 +26,40 @@ export const Home = () => {
   }
 
   return (
-    <main>
+    <main className="pt-4">
+      <h1 className="text-2xl font-bold mb-4">Recent articles</h1>
       {articleList.items?.length === 0 && "No more articles"}
       {articleList.items?.map((article) => (
-        <p key={article.articleId}>{article.title}</p>
+        <Article key={article.articleId} article={article} />
       ))}
     </main>
+  );
+};
+
+const Article = ({ article }: { article: ArticleDetail }) => {
+  return (
+    <div className="flex gap-2">
+      <img
+        className="h-32 object-contain rounded-lg"
+        src={`${BASE_URL}/images/${article.imageId}`}
+        alt="article main"
+      />
+      <div className="flex flex-col ">
+        <h2 className="font-bold text-lg">{article.title}</h2>
+        <div className="flex items-center gap-2 text-secondary">
+          <span>user</span> <FaCircle className="h-1 w-1" />{" "}
+          <span>{article.createdAt as unknown as string}</span>
+        </div>
+        <p>{article.perex}</p>
+        <div className="mt-auto">
+          <NavLink
+            to={`/article/${article.articleId}`}
+            className="text-primary"
+          >
+            Read whole article
+          </NavLink>
+        </div>
+      </div>
+    </div>
   );
 };
