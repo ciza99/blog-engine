@@ -28,7 +28,7 @@ export const Layout = () => {
         </nav>
       </header>
 
-      <main className="pt-14 container mx-auto">
+      <main className="pt-14 container mx-auto flex flex-col h-full">
         <Outlet />
       </main>
     </>
