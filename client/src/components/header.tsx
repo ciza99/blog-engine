@@ -30,7 +30,7 @@ export const Header = () => {
             >
               My Articles
             </NavLink>
-            <NavLink to="/articles/new" className={getLinkClassNames}>
+            <NavLink to="/articles/new" className="text-primary">
               Create Article
             </NavLink>
             <div className="flex items-center gap-2">

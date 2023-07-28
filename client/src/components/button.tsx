@@ -11,14 +11,16 @@ export const Button = ({
   children,
   ...props
 }: ButtonElementProps & {
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "icon";
 }) => {
   return (
     <button
       className={clsx(
-        "py-1 px-2 rounded-lg",
+        "py-1",
         {
-          "bg-primary text-white": variant === "primary",
+          "px-2 rounded-lg bg-primary text-white": variant === "primary",
+          "px-2 rounded-lg bg-secondary text-white": variant === "secondary",
+          "px-1 rounded-full": variant === "icon",
         },
         className
       )}
