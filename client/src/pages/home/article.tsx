@@ -24,7 +24,7 @@ export const Article = ({ article }: { article: ArticleDetail }) => {
         <p>{article.perex}</p>
         <div className="mt-auto">
           <NavLink
-            to={`/article/${article.articleId}`}
+            to={`/articles/${article.articleId}`}
             className="text-primary"
           >
             Read whole article

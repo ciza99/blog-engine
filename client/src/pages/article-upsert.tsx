@@ -1,17 +1,24 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Form, FormProvider, useForm } from "react-hook-form";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  Form,
+  FormProvider,
+  useController,
+  useForm,
+  useFormContext,
+} from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { z } from "zod";
 
 import { Button } from "components/button";
 import { ImageField } from "components/form/image-input";
-import { TextArea } from "components/form/text-area";
 import { TextField } from "components/form/text-field";
 import { ArticleDetail, ImageInfo } from "models";
 import { axios } from "utils/axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Spinner } from "components/spinner";
+import { getArticle } from "api/api";
+import MDEditor from "@uiw/react-md-editor";
 
 type ArticleSchema = z.infer<typeof articleSchema>;
 const articleSchema = z.object({
@@ -21,12 +28,8 @@ const articleSchema = z.object({
   image: z.any(),
 });
 
-const getArticle = (articleId?: string) =>
-  axios.get<ArticleDetail>(`/articles/${articleId}`).then((res) => res.data);
-
 export const ArticleUpsert = () => {
   const { articleId } = useParams<{ articleId: string }>();
-
   const { data: article } = useQuery({
     queryKey: ["article", articleId],
     queryFn: () => getArticle(articleId),
@@ -127,15 +130,25 @@ export const ArticleUpsertForm = ({ article }: { article?: ArticleDetail }) => {
           className="w-full"
           name="perex"
         />
-        <TextArea
-          label="Content"
-          placeholder="Supports markdown. Yay!"
-          className="w-full"
-          control={methods.control}
-          name="content"
-          rows={25}
-        />
+        <ContentEditor />
       </FormProvider>
     </Form>
+  );
+};
+
+const ContentEditor = () => {
+  const { control } = useFormContext<ArticleSchema>();
+  const { field } = useController({ control, name: "content" });
+
+  return (
+    <div>
+      <p className="mb-2">Content</p>
+      <MDEditor
+        value={field.value}
+        onChange={(value) => {
+          field.onChange(value);
+        }}
+      />
+    </div>
   );
 };

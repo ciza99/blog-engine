@@ -14,7 +14,7 @@ export const Header = () => {
   const { isLoggedIn } = useAuth();
 
   return (
-    <header className="fixed h-14 flex left-0 right-0 top-0 items-center bg-light">
+    <header className="z-20 fixed h-14 flex left-0 right-0 top-0 items-center bg-light">
       <nav className="flex items-center gap-4 container mx-auto">
         <NavLink to="/" className={getLinkClassNames}>
           Recent Articles

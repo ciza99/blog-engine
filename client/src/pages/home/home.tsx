@@ -24,12 +24,12 @@ export const Home = () => {
   }
 
   return (
-    <main className="pt-4">
-      <h1 className="text-2xl font-bold mb-4">Recent articles</h1>
+    <section className="pt-4 flex flex-col gap-4">
+      <h1 className="text-2xl font-bold mb-2">Recent articles</h1>
       {articleList.items?.length === 0 && "No more articles"}
       {articleList.items?.map((article) => (
         <Article key={article.articleId} article={article} />
       ))}
-    </main>
+    </section>
   );
 };
