@@ -19,7 +19,7 @@ export const TextField = <TFormValues extends FieldValues>({
 }) => {
   const {
     field,
-    fieldState: { isTouched, error },
+    fieldState: { error },
   } = useController({ control, name });
 
   return (
@@ -37,9 +37,7 @@ export const TextField = <TFormValues extends FieldValues>({
           {...props}
         />
       </label>
-      {isTouched && error && (
-        <span className="text-red-500">{error.message}</span>
-      )}
+      {error && <p className="text-red-500 text-sm">{error.message}</p>}
     </div>
   );
 };

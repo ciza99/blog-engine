@@ -1,20 +1,44 @@
 import { Form, useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
 
 import { Button } from "components/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TextField } from "components/form/text-field";
+import { axios } from "utils/axios";
+import { toast } from "react-toastify";
+import { tokenHandler } from "utils/token-handler";
 
 type LoginSchema = z.infer<typeof loginSchema>;
 const loginSchema = z.object({
-  email: z.string().email(),
+  username: z.string().min(4),
   password: z.string().min(4),
 });
 
+const postSession = async (data: LoginSchema) => {
+  return axios
+    .post<{ access_token: string }>("/login", data)
+    .then((res) => res.data);
+};
+
 export const Login = () => {
-  const { control } = useForm({
+  const { mutate: login } = useMutation(postSession, {
+    onSuccess: (sessionInfo) => {
+      console.log({ sessionInfo });
+      if (!sessionInfo.access_token) {
+        return;
+      }
+
+      tokenHandler.setToken(sessionInfo.access_token);
+    },
+    onError: () => {
+      toast("Failed to login", { type: "error" });
+    },
+  });
+
+  const { control, handleSubmit } = useForm({
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
     resolver: zodResolver(loginSchema),
@@ -28,11 +52,10 @@ export const Login = () => {
       >
         <h1 className="text-2xl font-bold">Log In</h1>
         <TextField
-          name="email"
+          name="username"
           control={control}
-          label="Email"
-          type="email"
-          placeholder="me@example.com"
+          label="Username"
+          placeholder="johndoe123"
         />
         <TextField
           name="password"
@@ -41,7 +64,11 @@ export const Login = () => {
           type="password"
           placeholder="********"
         />
-        <Button className="self-end" type="submit">
+        <Button
+          className="self-end"
+          type="submit"
+          onClick={handleSubmit((data) => login(data))}
+        >
           Log In
         </Button>
       </Form>
