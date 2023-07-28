@@ -6,7 +6,6 @@ import { useImage } from "hooks/use-image";
 import { FaCircle } from "react-icons/fa6";
 import { format } from "date-fns";
 import { useMemo } from "react";
-import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 import MDEditor from "@uiw/react-md-editor";
 
 export const ArticleDetail = () => {
