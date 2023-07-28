@@ -29,5 +29,12 @@ export const Home = () => {
     );
   }
 
-  return <main>{articleList.items?.length === 0 && "No more articles"}</main>;
+  return (
+    <main>
+      {articleList.items?.length === 0 && "No more articles"}
+      {articleList.items?.map((article) => (
+        <p key={article.articleId}>{article.title}</p>
+      ))}
+    </main>
+  );
 };
