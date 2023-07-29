@@ -8,14 +8,17 @@ const getImage = async (id?: string) => {
     .then((res) => res.data);
 };
 
-// Simple hook to download image from server and create a blob url.
-// This hook is needed because images are protected by auth headers.
+/*
+ * Simple hook to download image from server and create a blob url.
+ * This hook is needed because images are protected by auth headers.
+ */
 export const useImage = (id?: string) => {
   const [src, setSrc] = useState<string>();
   const { data: image } = useQuery({
     queryFn: () => getImage(id),
     queryKey: ["image", id],
     enabled: !!id,
+    // Don't refetch images
     staleTime: Infinity,
   });
 
@@ -25,7 +28,6 @@ export const useImage = (id?: string) => {
       return;
     }
 
-    console.log({ image });
     const url = URL.createObjectURL(image);
     setSrc(url);
 

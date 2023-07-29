@@ -21,10 +21,13 @@ export const AppRoutes = () => {
           {isLoggedIn ? (
             <>
               <Route path="/articles" element={<Articles />} />
-              <Route path="/articles/new" element={<ArticleUpsert />} />
+              <Route
+                path="/articles/new"
+                element={<ArticleUpsert key="new" />}
+              />
               <Route
                 path="/articles/:articleId/edit"
-                element={<ArticleUpsert />}
+                element={<ArticleUpsert key="edit" />}
               />
             </>
           ) : (

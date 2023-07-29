@@ -1,14 +1,15 @@
 import {
   ReactNode,
   createContext,
+  useCallback,
   useContext,
-  useEffect,
   useState,
 } from "react";
-import { ACCESS_TOKEN_KEY, tokenHandler } from "utils/token-handler";
+import { tokenHandler } from "utils/token-handler";
 
 type AuthContextType = {
   isLoggedIn: boolean;
+  refreshAuth: () => void;
 };
 const AuthContext = createContext<AuthContextType>(undefined as never);
 
@@ -19,22 +20,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     () => tokenHandler.getToken() !== null
   );
 
-  useEffect(() => {
-    const listener = (storageEvent: StorageEvent) => {
-      if (storageEvent.key !== ACCESS_TOKEN_KEY) {
-        return;
-      }
-
-      setIsLoggedIn(tokenHandler.getToken() !== null);
-    };
-
-    window.addEventListener("storage", listener);
-
-    return () => window.removeEventListener("storage", listener);
+  const refreshAuth = useCallback(() => {
+    setIsLoggedIn(tokenHandler.getToken() !== null);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn }}>
+    <AuthContext.Provider value={{ isLoggedIn, refreshAuth }}>
       {children}
     </AuthContext.Provider>
   );

@@ -42,11 +42,15 @@ export const CommentForm = ({ articleId }: { articleId: string }) => {
       onSubmit={handleSubmit((data) => mutate(data))}
     >
       <Avatar />
-      <TextField
-        control={control}
-        name="content"
-        placeholder="Join the discussion"
-      />
+      <div className="grow">
+        <TextField
+          className="w-full"
+          control={control}
+          showErrorMessage={false}
+          name="content"
+          placeholder="Join the discussion"
+        />
+      </div>
     </form>
   );
 };

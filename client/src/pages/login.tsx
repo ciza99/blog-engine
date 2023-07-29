@@ -8,6 +8,8 @@ import { TextField } from "components/form/text-field";
 import { axios } from "utils/axios";
 import { toast } from "react-toastify";
 import { tokenHandler } from "utils/token-handler";
+import { useAuth } from "context/auth-context";
+import { useNavigate } from "react-router-dom";
 
 type LoginSchema = z.infer<typeof loginSchema>;
 const loginSchema = z.object({
@@ -22,14 +24,16 @@ const postSession = async (data: LoginSchema) => {
 };
 
 export const Login = () => {
+  const { refreshAuth } = useAuth();
+  const navigate = useNavigate();
   const { mutate: login } = useMutation(postSession, {
     onSuccess: (sessionInfo) => {
-      console.log({ sessionInfo });
       if (!sessionInfo.access_token) {
         return;
       }
-
       tokenHandler.setToken(sessionInfo.access_token);
+      refreshAuth();
+      navigate("/");
     },
     onError: () => {
       toast("Failed to login", { type: "error" });

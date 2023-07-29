@@ -36,8 +36,6 @@ export const ArticleUpsert = () => {
     enabled: !!articleId,
   });
 
-  console.log({ articleId, article });
-
   if (!articleId) {
     return <ArticleUpsertForm />;
   }

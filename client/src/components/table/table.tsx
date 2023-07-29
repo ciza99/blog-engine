@@ -23,15 +23,19 @@ export const Table = <TRow,>({
       </div>
       <table className="table-auto w-full">
         <thead>
-          {columns.map((column) => (
-            <th
-              align="left"
-              className="p-2 border-b-2 border-secondary font-bold"
-              key={column.key}
-            >
-              {column.label instanceof Function ? column.label() : column.label}
-            </th>
-          ))}
+          <tr>
+            {columns.map((column) => (
+              <th
+                align="left"
+                className="p-2 border-b-2 border-secondary font-bold"
+                key={column.key}
+              >
+                {column.label instanceof Function
+                  ? column.label()
+                  : column.label}
+              </th>
+            ))}
+          </tr>
         </thead>
         <tbody>
           {data.length === 0 && (
