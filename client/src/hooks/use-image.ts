@@ -14,7 +14,7 @@ const getImage = async (id?: string) => {
  */
 export const useImage = (id?: string) => {
   const [src, setSrc] = useState<string>();
-  const { data: image } = useQuery({
+  const { data: image, isLoading } = useQuery({
     queryFn: () => getImage(id),
     queryKey: ["image", id],
     enabled: !!id,
@@ -34,5 +34,5 @@ export const useImage = (id?: string) => {
     return () => URL.revokeObjectURL(url);
   }, [image]);
 
-  return { src, image };
+  return { src, image, isLoading };
 };

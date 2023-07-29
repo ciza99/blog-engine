@@ -20,7 +20,7 @@ export const CommentForm = ({ articleId }: { articleId: string }) => {
     (data: Comment) => axios.post("/comments", data),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(["article", articleId]);
+        void queryClient.invalidateQueries(["article", articleId]);
       },
       onError: () => {
         toast("Error creating comment", { type: "error" });

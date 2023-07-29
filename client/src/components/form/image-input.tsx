@@ -4,6 +4,7 @@ import {
   Control,
   FieldValues,
   Path,
+  PathValue,
   useController,
   useFormContext,
 } from "react-hook-form";
@@ -77,7 +78,7 @@ export const ImageField = <TFormValues extends FieldValues>({
             <div className="h-5 w-0.5 bg-light" />
             <span
               onClick={() => {
-                setValue(name, "" as any);
+                setValue(name, "" as PathValue<TFormValues, Path<TFormValues>>);
                 setInputValue("");
               }}
               className="cursor-pointer text-red-500"

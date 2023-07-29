@@ -6,7 +6,7 @@ import { BASE_URL } from "constants";
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
   headers: {
-    "X-API-KEY": import.meta.env.VITE_API_KEY,
+    "X-API-KEY": import.meta.env.VITE_API_KEY as string,
   },
 });
 

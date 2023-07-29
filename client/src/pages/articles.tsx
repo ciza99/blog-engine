@@ -1,14 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getArticleList } from "api/api";
 import { Button } from "components/button";
+import { Pagination } from "components/pagination";
 import { textCell } from "components/table/cells";
 import { Column, Table } from "components/table/table";
 import { USERNAME } from "constants";
+import { usePagination } from "hooks/use-pagination";
 import { Article } from "models";
 import { useMemo } from "react";
 import { FaPen, FaTrash } from "react-icons/fa6";
-import { NavLink } from "react-router-dom";
+import { NavLink, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { paginationQuerySchema } from "schemas";
 import { axios } from "utils/axios";
 
 const deleteArticleRequest = (articleId: string) =>
@@ -20,7 +23,7 @@ const useColumns = () => {
     (articleId: string) => deleteArticleRequest(articleId),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(["articles"]);
+        void queryClient.invalidateQueries(["articles"]);
       },
       onError: () => {
         toast("Failed to delete article", { type: "error" });
@@ -73,31 +76,56 @@ const useColumns = () => {
         ),
       },
     ],
-    []
+    [deleteArticle]
   );
 };
 
 export const Articles = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { offset = 0, limit = 5 } = useMemo(
+    () =>
+      paginationQuerySchema.parse(Object.fromEntries(searchParams.entries())),
+    [searchParams]
+  );
+
   const { data: articleList } = useQuery({
-    queryKey: ["articles"],
-    queryFn: () => getArticleList(1),
+    queryKey: ["articles", offset, limit],
+    queryFn: () => getArticleList(offset, limit),
+  });
+
+  const { page, totalPages } = usePagination({
+    offset,
+    limit,
+    total: articleList?.pagination?.total ?? 0,
   });
 
   const columns = useColumns();
 
   return (
-    <Table
-      title="My articles"
-      ActionBar={
-        <NavLink
-          to="/articles/new"
-          className="px-2 py-1 bg-primary rounded-lg text-white"
-        >
-          Create Article
-        </NavLink>
-      }
-      data={articleList?.items ?? []}
-      columns={columns}
-    />
+    <div className="py-4">
+      <Table
+        title="My articles"
+        ActionBar={
+          <NavLink
+            to="/articles/new"
+            className="px-2 py-1 bg-primary rounded-lg text-white"
+          >
+            Create Article
+          </NavLink>
+        }
+        data={articleList?.items ?? []}
+        columns={columns}
+      />
+      <div className="flex justify-center">
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onClick={(page) => {
+            const offset = (page - 1) * limit;
+            setSearchParams({ offset: offset.toString() });
+          }}
+        />
+      </div>
+    </div>
   );
 };

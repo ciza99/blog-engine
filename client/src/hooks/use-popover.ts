@@ -35,6 +35,6 @@ export const usePopover = ({
 
   return useMemo(
     () => ({ ...props, getReferenceProps, getFloatingProps, getItemProps }),
-    [props, getReferenceProps, getFloatingProps]
+    [props, getReferenceProps, getFloatingProps, getItemProps]
   );
 };

@@ -1,18 +1,31 @@
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 import { Spinner } from "components/spinner";
 import { getArticleList } from "api/api";
 import { Article } from "./article";
+import { Pagination } from "components/pagination";
+import { usePagination } from "hooks/use-pagination";
+import { paginationQuerySchema } from "schemas";
 
 export const Home = () => {
-  const { page: pageQuery } = useParams<{ page: string }>();
-  const pageNumber = parseInt(pageQuery ?? "1");
-  const page = isNaN(pageNumber) ? 1 : pageNumber;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { offset = 0, limit = 5 } = useMemo(
+    () =>
+      paginationQuerySchema.parse(Object.fromEntries(searchParams.entries())),
+    [searchParams]
+  );
 
   const { data: articleList } = useQuery({
-    queryKey: ["articles", page],
-    queryFn: () => getArticleList(page),
+    queryKey: ["articles", offset, limit],
+    queryFn: () => getArticleList(offset, limit),
+  });
+
+  const { page, totalPages } = usePagination({
+    offset,
+    limit,
+    total: articleList?.pagination?.total ?? 0,
   });
 
   if (!articleList) {
@@ -30,6 +43,16 @@ export const Home = () => {
       {articleList.items?.map((article) => (
         <Article key={article.articleId} article={article} />
       ))}
+      <div className="flex justify-center">
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onClick={(page) => {
+            const offset = (page - 1) * limit;
+            setSearchParams({ offset: offset.toString() });
+          }}
+        />
+      </div>
     </section>
   );
 };

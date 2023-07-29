@@ -1,3 +1,4 @@
-export const textCell =
-  <TRow extends {}>(key: keyof TRow) =>
-  (row: TRow) => <span>{row[key]}</span>;
+export const textCell = <TRow extends object>(key: keyof TRow) =>
+  function renderFunction(row: TRow) {
+    return <span>{row[key]}</span>;
+  };

@@ -74,7 +74,7 @@ export const Header = () => {
           {...getFloatingProps()}
           style={floatingStyles}
           ref={refs.setFloating}
-          className="p-4 shadow-lg border border-light rounded-lg"
+          className="p-2 shadow-lg border border-light rounded-lg"
         >
           <Button
             variant="clear"

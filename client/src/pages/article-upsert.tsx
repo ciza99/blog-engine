@@ -26,7 +26,7 @@ const articleSchema = z.object({
   title: z.string().min(4),
   perex: z.string().min(4).nullable(),
   content: z.string().min(4),
-  image: z.any(),
+  image: z.instanceof(Blob).or(z.string()),
 });
 
 export const ArticleUpsert = () => {
@@ -37,13 +37,14 @@ export const ArticleUpsert = () => {
     enabled: !!articleId,
   });
 
-  const { image } = useImage(article?.imageId);
+  const { image, isLoading } = useImage(article?.imageId);
+  console.log({ image, isLoading, article });
 
   if (!articleId) {
     return <ArticleUpsertForm />;
   }
 
-  if (!article || !image) {
+  if (!article || (article?.imageId && isLoading)) {
     return (
       <div className="grow flex items-center justify-center">
         <Spinner />
@@ -54,7 +55,7 @@ export const ArticleUpsert = () => {
   return <ArticleUpsertForm article={article} image={image} />;
 };
 
-const uploadImage = async (image: File) => {
+const uploadImage = async (image: Blob) => {
   const formData = new FormData();
   formData.append("image", image);
 
@@ -76,11 +77,12 @@ export const ArticleUpsertForm = ({
   const { mutate: upsertArticle } = useMutation(
     async (data: ArticleSchema) => {
       const isNewImage = data.image !== image;
-      console.log({ isNewImage });
+      console.log("sup");
 
-      const imageId = isNewImage
-        ? await uploadImage(data.image)
-        : article?.imageId;
+      const imageId =
+        isNewImage && data.image instanceof Blob
+          ? await uploadImage(data.image)
+          : article?.imageId;
 
       const body: ArticleDetail = {
         title: data.title,
@@ -88,6 +90,7 @@ export const ArticleUpsertForm = ({
         content: data.content,
         imageId,
       };
+
       const request = articleId
         ? axios.patch<ArticleDetail>(`/articles/${articleId}`, body)
         : axios.post<ArticleDetail>("/articles", body);
@@ -114,7 +117,7 @@ export const ArticleUpsertForm = ({
   });
 
   return (
-    <Form control={methods.control} className="pt-4 flex flex-col gap-4">
+    <Form control={methods.control} className="py-4 flex flex-col gap-4">
       <FormProvider {...methods}>
         <div className="flex items-center gap-4">
           <h1 className="font-bold text-2xl">
@@ -154,12 +157,16 @@ export const ArticleUpsertForm = ({
 
 const ContentEditor = () => {
   const { control } = useFormContext<ArticleSchema>();
-  const { field } = useController({ control, name: "content" });
+  const {
+    field,
+    fieldState: { error },
+  } = useController({ control, name: "content" });
 
   return (
     <div>
       <p className="mb-2">Content</p>
       <MDEditor value={field.value} onChange={field.onChange} />
+      {error && <p className="text-red-500 text-sm">{error.message}</p>}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import { FaCircle } from "react-icons/fa6";
 import { NavLink } from "react-router-dom";
 
 import { ArticleDetail } from "models";
+import { Image } from "components/image";
 import { format } from "date-fns";
 import { useImage } from "hooks/use-image";
 import { USERNAME } from "constants";
@@ -11,7 +12,7 @@ export const Article = ({ article }: { article: ArticleDetail }) => {
 
   return (
     <div className="flex flex-col md:flex-row gap-4">
-      <img
+      <Image
         className="w-full object-cover md:w-44 md:h-44 md:object-cover rounded-lg"
         src={src}
         alt="article main"
