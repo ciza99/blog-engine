@@ -10,9 +10,9 @@ export const Article = ({ article }: { article: ArticleDetail }) => {
   const src = useImage(article.imageId);
 
   return (
-    <div className="flex gap-4">
+    <div className="flex flex-col md:flex-row gap-4">
       <img
-        className="h-44 w-44 object-cover rounded-lg"
+        className="w-full object-cover md:w-44 md:h-44 md:object-cover rounded-lg"
         src={src}
         alt="article main"
       />
