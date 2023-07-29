@@ -8,21 +8,25 @@ import {
   useDismiss,
   useRole,
   useInteractions,
+  Placement,
 } from "@floating-ui/react";
 import { useMemo } from "react";
 
 export const usePopover = ({
   open,
+  placement,
   onOpenChange,
 }: {
   open?: boolean;
   onOpenChange?: (value: boolean, event?: Event) => void;
+  placement?: Placement;
 }) => {
   const props = useFloating({
     open,
     onOpenChange,
     middleware: [offset(10), flip(), shift()],
     whileElementsMounted: autoUpdate,
+    placement,
   });
 
   const click = useClick(props.context);

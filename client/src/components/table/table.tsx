@@ -1,7 +1,7 @@
 export type Column<TRow> = {
   key: string;
   label: string | (() => JSX.Element);
-  render: (row: TRow) => JSX.Element;
+  render: (row: TRow, rowIndex: number) => JSX.Element;
 };
 
 export const Table = <TRow,>({
@@ -45,14 +45,14 @@ export const Table = <TRow,>({
               </td>
             </tr>
           )}
-          {data.map((item, index) => (
-            <tr key={index}>
+          {data.map((item, rowIndex) => (
+            <tr key={rowIndex}>
               {columns.map((column) => (
                 <td
                   className="p-2 border-b border-gray first:border-none"
                   key={column.key}
                 >
-                  {column.render(item)}
+                  {column.render(item, rowIndex)}
                 </td>
               ))}
             </tr>
