@@ -19,6 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Spinner } from "components/spinner";
 import { getArticle } from "api/api";
 import MDEditor from "@uiw/react-md-editor";
+import { useImage } from "hooks/use-image";
 
 type ArticleSchema = z.infer<typeof articleSchema>;
 const articleSchema = z.object({
@@ -36,11 +37,13 @@ export const ArticleUpsert = () => {
     enabled: !!articleId,
   });
 
+  const { image } = useImage(article?.imageId);
+
   if (!articleId) {
     return <ArticleUpsertForm />;
   }
 
-  if (!article) {
+  if (!article || !image) {
     return (
       <div className="grow flex items-center justify-center">
         <Spinner />
@@ -48,27 +51,42 @@ export const ArticleUpsert = () => {
     );
   }
 
-  return <ArticleUpsertForm article={article} />;
+  return <ArticleUpsertForm article={article} image={image} />;
 };
 
-export const ArticleUpsertForm = ({ article }: { article?: ArticleDetail }) => {
+const uploadImage = async (image: File) => {
+  const formData = new FormData();
+  formData.append("image", image);
+
+  return axios
+    .post<ImageInfo[]>("/images", formData)
+    .then((res) => res.data[0].imageId);
+};
+
+export const ArticleUpsertForm = ({
+  article,
+  image,
+}: {
+  article?: ArticleDetail;
+  image?: Blob;
+}) => {
   const { articleId } = useParams<{ articleId: string }>();
   const navigate = useNavigate();
 
   const { mutate: upsertArticle } = useMutation(
     async (data: ArticleSchema) => {
-      const formData = new FormData();
-      formData.append("image", data.image);
+      const isNewImage = data.image !== image;
+      console.log({ isNewImage });
 
-      const imageInfo = await axios
-        .post<ImageInfo[]>("/images", formData)
-        .then((res) => res.data[0]);
+      const imageId = isNewImage
+        ? await uploadImage(data.image)
+        : article?.imageId;
 
       const body: ArticleDetail = {
         title: data.title,
         perex: data.title,
         content: data.content,
-        imageId: imageInfo.imageId,
+        imageId,
       };
       const request = articleId
         ? axios.patch<ArticleDetail>(`/articles/${articleId}`, body)
@@ -90,7 +108,7 @@ export const ArticleUpsertForm = ({ article }: { article?: ArticleDetail }) => {
       title: article?.title ?? "",
       perex: article?.perex ?? "",
       content: article?.content ?? "",
-      image: "",
+      image: image ?? "",
     },
     resolver: zodResolver(articleSchema),
   });
@@ -141,12 +159,7 @@ const ContentEditor = () => {
   return (
     <div>
       <p className="mb-2">Content</p>
-      <MDEditor
-        value={field.value}
-        onChange={(value) => {
-          field.onChange(value);
-        }}
-      />
+      <MDEditor value={field.value} onChange={field.onChange} />
     </div>
   );
 };

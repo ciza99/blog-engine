@@ -29,7 +29,7 @@ export const ArticleDetail = () => {
     [articleList, articleId]
   );
 
-  const src = useImage(article?.imageId);
+  const { src } = useImage(article?.imageId);
 
   if (!article) {
     return (
@@ -56,7 +56,9 @@ export const ArticleDetail = () => {
             Comments ({article.comments?.length ?? 0})
           </h2>
           <CommentForm articleId={article.articleId!} />
-          {article.comments?.map((comment) => <Comment comment={comment} />)}
+          {article.comments?.map((comment) => (
+            <Comment key={comment.commentId} comment={comment} />
+          ))}
         </section>
       </div>
       <aside className="flex-1 sticky md:self-start top-16 border-t border-gray pt-4 mt-4 md:border-l md:border-t-0 md:pl-4 md:ml-4 md:pt-0 md:mt-0">
@@ -67,7 +69,7 @@ export const ArticleDetail = () => {
           </div>
         )}
         {relatedArticles?.map((article) => (
-          <div>
+          <div key={article.articleId}>
             <h3 className="font-bold">{article.title}</h3>
             <p>{article.perex}</p>
           </div>

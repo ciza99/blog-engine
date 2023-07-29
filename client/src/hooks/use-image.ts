@@ -4,7 +4,7 @@ import { axios } from "utils/axios";
 
 const getImage = async (id?: string) => {
   return axios
-    .get(`/images/${id}`, { responseType: "blob" })
+    .get<Blob>(`/images/${id}`, { responseType: "blob" })
     .then((res) => res.data);
 };
 
@@ -34,5 +34,5 @@ export const useImage = (id?: string) => {
     return () => URL.revokeObjectURL(url);
   }, [image]);
 
-  return src;
+  return { src, image };
 };

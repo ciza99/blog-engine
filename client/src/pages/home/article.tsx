@@ -7,7 +7,7 @@ import { useImage } from "hooks/use-image";
 import { USERNAME } from "constants";
 
 export const Article = ({ article }: { article: ArticleDetail }) => {
-  const src = useImage(article.imageId);
+  const { src } = useImage(article.imageId);
 
   return (
     <div className="flex flex-col md:flex-row gap-4">
