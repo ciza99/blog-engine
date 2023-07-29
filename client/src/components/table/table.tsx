@@ -44,7 +44,10 @@ export const Table = <TRow,>({
           {data.map((item, index) => (
             <tr key={index}>
               {columns.map((column) => (
-                <td className="p-2" key={column.key}>
+                <td
+                  className="p-2 border-b border-gray first:border-none"
+                  key={column.key}
+                >
                   {column.render(item)}
                 </td>
               ))}

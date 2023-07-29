@@ -7,7 +7,7 @@ import { Home } from "./home/home";
 import { Login } from "./login";
 import { Articles } from "./articles";
 import { ArticleUpsert } from "./article-upsert";
-import { ArticleDetail } from "./article-detail";
+import { ArticleDetail } from "./article-detail/article-detail";
 
 export const AppRoutes = () => {
   const { isLoggedIn } = useAuth();

@@ -31,7 +31,7 @@ const articleSchema = z.object({
 export const ArticleUpsert = () => {
   const { articleId } = useParams<{ articleId: string }>();
   const { data: article } = useQuery({
-    queryKey: ["article", articleId],
+    queryKey: ["articles", articleId],
     queryFn: () => getArticle(articleId),
     enabled: !!articleId,
   });

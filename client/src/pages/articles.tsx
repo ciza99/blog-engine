@@ -1,17 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getArticleList } from "api/api";
 import { Button } from "components/button";
-import { Column, Table } from "components/table";
+import { textCell } from "components/table/cells";
+import { Column, Table } from "components/table/table";
+import { USERNAME } from "constants";
 import { Article } from "models";
 import { useMemo } from "react";
 import { FaPen, FaTrash } from "react-icons/fa6";
 import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import { axios } from "utils/axios";
-
-const textCell =
-  <TRow extends {}>(key: keyof TRow) =>
-  (row: TRow) => <span>{row[key]}</span>;
 
 const deleteArticleRequest = (articleId: string) =>
   axios.delete(`/articles/${articleId}`);
@@ -50,7 +48,7 @@ const useColumns = () => {
       {
         key: "author",
         label: "Author",
-        render: () => <span>Me?</span>,
+        render: () => <span>{USERNAME}</span>,
       },
       {
         key: "#comments",

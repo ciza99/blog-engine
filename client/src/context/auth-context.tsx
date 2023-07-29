@@ -5,7 +5,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { tokenHandler } from "utils/token-handler";
+import { ACCESS_TOKEN_KEY, tokenHandler } from "utils/token-handler";
 
 type AuthContextType = {
   isLoggedIn: boolean;
@@ -21,7 +21,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const listener = (storageEvent: StorageEvent) => {
-      if (storageEvent.key !== "access-token") {
+      if (storageEvent.key !== ACCESS_TOKEN_KEY) {
         return;
       }
 
