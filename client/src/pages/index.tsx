@@ -8,6 +8,7 @@ import { Login } from "./login";
 import { Articles } from "./articles";
 import { ArticleUpsert } from "./article-upsert";
 import { ArticleDetail } from "./article-detail/article-detail";
+import { About } from "./about";
 
 export const AppRoutes = () => {
   const { isLoggedIn } = useAuth();
@@ -17,6 +18,7 @@ export const AppRoutes = () => {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
           <Route path="/articles/:articleId" element={<ArticleDetail />} />
           {isLoggedIn ? (
             <>
