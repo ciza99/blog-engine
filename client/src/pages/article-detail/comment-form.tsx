@@ -8,25 +8,26 @@ import { toast } from "react-toastify";
 import { axios } from "utils/axios";
 import { z } from "zod";
 
+type CommentSchema = z.infer<typeof commentSchema>;
 const commentSchema = z.object({
   articleId: z.string(),
   author: z.string().min(1),
   content: z.string().min(1),
 });
 
+const postComment = async (data: CommentSchema) =>
+  axios.post<Comment>("/comments", data).then((res) => res.data);
+
 export const CommentForm = ({ articleId }: { articleId: string }) => {
   const queryClient = useQueryClient();
-  const { mutate } = useMutation(
-    (data: Comment) => axios.post("/comments", data),
-    {
-      onSuccess: () => {
-        void queryClient.invalidateQueries(["article", articleId]);
-      },
-      onError: () => {
-        toast("Error creating comment", { type: "error" });
-      },
-    }
-  );
+  const { mutate } = useMutation(postComment, {
+    onSuccess: () => {
+      void queryClient.invalidateQueries(["article", articleId]);
+    },
+    onError: () => {
+      toast("Error creating comment", { type: "error" });
+    },
+  });
   const { control, handleSubmit } = useForm({
     defaultValues: {
       articleId,

@@ -8,8 +8,8 @@ import { format } from "date-fns";
 import { useMemo } from "react";
 import MDEditor from "@uiw/react-md-editor";
 import { CommentForm } from "./comment-form";
-import { Comment } from "./comment";
 import { USERNAME } from "constants";
+import { Comment } from "./comment";
 
 export const ArticleDetail = () => {
   const { articleId } = useParams<{ articleId: string }>();
@@ -53,13 +53,17 @@ export const ArticleDetail = () => {
           )}
           <MDEditor.Markdown source={article.content} />
         </section>
-        <section>
-          <h2 className="font-bold text-lg mb-4">
+        <section className="flex flex-col gap-4">
+          <h2 className="font-bold text-lg">
             Comments ({article.comments?.length ?? 0})
           </h2>
           <CommentForm articleId={article.articleId!} />
           {article.comments?.map((comment) => (
-            <Comment key={comment.commentId} comment={comment} />
+            <Comment
+              key={comment.commentId}
+              comment={comment}
+              articleId={article.articleId!}
+            />
           ))}
         </section>
       </div>
