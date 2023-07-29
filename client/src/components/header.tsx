@@ -3,20 +3,10 @@ import { useAuth } from "context/auth-context";
 import { FaArrowRight, FaCaretDown, FaRightFromBracket } from "react-icons/fa6";
 import { NavLink } from "react-router-dom";
 import { Avatar } from "./avatar";
-import {
-  useClick,
-  useDismiss,
-  useRole,
-  flip,
-  offset,
-  shift,
-  useFloating,
-  useInteractions,
-  autoUpdate,
-} from "@floating-ui/react";
 import { useState } from "react";
 import { Button } from "./button";
 import { tokenHandler } from "utils/token-handler";
+import { usePopover } from "hooks/use-popover";
 
 const getLinkClassNames = ({ isActive }: { isActive: boolean }) =>
   clsx({
@@ -27,22 +17,11 @@ const getLinkClassNames = ({ isActive }: { isActive: boolean }) =>
 export const Header = () => {
   const [open, setOpen] = useState(false);
   const { refreshAuth } = useAuth();
-  const { refs, floatingStyles, context } = useFloating({
-    open,
-    onOpenChange: setOpen,
-    middleware: [offset(10), flip(), shift()],
-    whileElementsMounted: autoUpdate,
-  });
-
-  const click = useClick(context);
-  const dismiss = useDismiss(context);
-  const role = useRole(context);
-
-  const { getReferenceProps, getFloatingProps } = useInteractions([
-    click,
-    dismiss,
-    role,
-  ]);
+  const { refs, getReferenceProps, floatingStyles, getFloatingProps } =
+    usePopover({
+      open,
+      onOpenChange: setOpen,
+    });
 
   const { isLoggedIn } = useAuth();
 
@@ -99,7 +78,7 @@ export const Header = () => {
         >
           <Button
             variant="clear"
-            className="hover:bg-light"
+            className="hover:bg-light transition-colors"
             startNode={<FaRightFromBracket />}
             onClick={() => {
               tokenHandler.deleteToken();
