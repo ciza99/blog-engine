@@ -7,6 +7,8 @@ export default {
         primary: "#2B7EFB",
         body: "#212529",
         secondary: "#6C757D",
+        light: "#F8F9FA",
+        gray: "#DFDFDF",
       },
     },
   },
