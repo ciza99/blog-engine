@@ -69,5 +69,9 @@ Available env variables:
 
 - For database I would proabably use a quite new ORM called `drizzle` or `prisma`.
 - For the login I would use `JWT` with both access and refresh tokens with rotation. The auth implementation in the provided API only gives access token in response body and since we want the auth to presist on browser refresh, storing it in local storage is our only option. This however can introduce vulnarabilites like XSS. For reference of how I would do this, I have implemented this already in a different project of mine, here is the link: [auth implementation](https://github.com/ciza99/overload/blob/main/server/src/utils/trpc.ts). The project uses tRPC instead of REST for communication but the approach is the same.
-- For testing I would use `jest`, again, I refer to the already mention project where you can view [usage of jest](https://github.com/ciza99/overload/blob/main/server/src/components/user/user-service.test.ts).
+- For testing I would use `jest`. Again, I refer to the already mention project where you can view [usage of jest](https://github.com/ciza99/overload/blob/main/server/src/components/user/user-service.test.ts) with service and database mocking.
+- To see how I would go about running everything in Docker including the database you can view [this project](https://github.com/ciza99/luxonis/tree/main).
 - Another project where I have done backend in Node.js is my bachelor thesis. It can be seen here: [thesis-server](https://gitlab.fi.muni.cz/xcizek3/thesis-server). However, this was implemented a long time ago (~ 3 years ago) and I have gained a lot of knowledge from that point on. So take that project with a grain of salt, I would do things quite differently now.
+
+### Closing thoughts
+I hope the description and reffered projects gave you some insight on how I would go about implementing the backend. I am open to any questions regarding the implementation.
