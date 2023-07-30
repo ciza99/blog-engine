@@ -38,7 +38,6 @@ export const ArticleUpsert = () => {
   });
 
   const { image, isLoading } = useImage(article?.imageId);
-  console.log({ image, isLoading, article });
 
   if (!articleId) {
     return <ArticleUpsertForm />;
@@ -77,7 +76,6 @@ export const ArticleUpsertForm = ({
   const { mutate: upsertArticle } = useMutation(
     async (data: ArticleSchema) => {
       const isNewImage = data.image !== image;
-      console.log("sup");
 
       const imageId =
         isNewImage && data.image instanceof Blob
