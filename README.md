@@ -57,8 +57,7 @@ Available env variables:
             │   ├── article-router.ts
             │   ├── article-model.ts
             │   ├── article-service.ts
-            │   ├── article-service.test.ts
-            │   └── article-test.ts
+            │   └── article-service.test.ts
             ├── auth/
             │   ├── auth-controller.ts
             │   ├── auth-service.ts
