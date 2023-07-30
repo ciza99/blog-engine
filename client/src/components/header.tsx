@@ -1,9 +1,15 @@
 import clsx from "clsx";
 import { useAuth } from "context/auth-context";
-import { FaArrowRight, FaCaretDown, FaRightFromBracket } from "react-icons/fa6";
-import { NavLink } from "react-router-dom";
+import {
+  FaArrowRight,
+  FaBars,
+  FaCaretDown,
+  FaRightFromBracket,
+  FaXmark,
+} from "react-icons/fa6";
+import { NavLink, NavLinkProps } from "react-router-dom";
 import { Avatar } from "./avatar";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "./button";
 import { tokenHandler } from "utils/token-handler";
 import { usePopover } from "hooks/use-popover";
@@ -15,61 +21,110 @@ const getLinkClassNames = ({ isActive }: { isActive: boolean }) =>
   });
 
 export const Header = () => {
-  const [open, setOpen] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const { refreshAuth } = useAuth();
   const { refs, getReferenceProps, floatingStyles, getFloatingProps } =
     usePopover({
-      open,
-      onOpenChange: setOpen,
+      open: popoverOpen,
+      onOpenChange: setPopoverOpen,
     });
 
   const { isLoggedIn } = useAuth();
 
+  const logOut = useCallback(() => {
+    tokenHandler.deleteToken();
+    refreshAuth();
+  }, [refreshAuth]);
+
+  const MenuNavLink = useCallback((props: NavLinkProps) => {
+    return (
+      <NavLink
+        {...props}
+        onClick={(e) => {
+          props.onClick?.(e);
+          setMenuOpen(false);
+        }}
+      />
+    );
+  }, []);
+
   return (
     <header className="z-20 fixed h-14 flex left-0 right-0 top-0 items-center bg-light">
-      <nav className="flex items-center gap-4 container px-2 mx-auto">
-        <NavLink to="/" className={getLinkClassNames}>
+      <div className="sm:hidden container px-2 mx-auto">
+        <button onClick={() => setMenuOpen(true)}>
+          <FaBars />
+        </button>
+      </div>
+      <nav
+        className={clsx(
+          "flex flex-col fixed top-0 left-0 bottom-0 right-0 bg-light shadow-lg gap-4 p-4",
+          "sm:flex-row sm:static sm:shadow-none sm:items-center sm:container sm:mx-auto sm:px-2 sm:py-0 sm:transition-none",
+          {
+            "translate-x-0 transition-transform": menuOpen,
+            "-translate-x-full sm:translate-x-0": !menuOpen,
+          }
+        )}
+      >
+        <button
+          onClick={() => setMenuOpen(false)}
+          className="sm:hidden self-end"
+        >
+          <FaXmark />
+        </button>
+        <MenuNavLink to="/" className={getLinkClassNames}>
           Recent Articles
-        </NavLink>
-        <NavLink to="/about" className={getLinkClassNames}>
+        </MenuNavLink>
+        <MenuNavLink to="/about" className={getLinkClassNames}>
           About
-        </NavLink>
+        </MenuNavLink>
         {isLoggedIn ? (
           <>
-            <NavLink
+            <MenuNavLink
               to="/articles"
-              className={(props) => clsx("ml-auto", getLinkClassNames(props))}
+              className={(props) =>
+                clsx("sm:ml-auto", getLinkClassNames(props))
+              }
             >
               My Articles
-            </NavLink>
-            <NavLink to="/articles/new" className="text-primary">
+            </MenuNavLink>
+            <MenuNavLink to="/articles/new" className="text-primary">
               Create Article
-            </NavLink>
+            </MenuNavLink>
             <button
-              className="flex items-center gap-2"
+              className="items-center gap-2 hidden sm:flex"
               ref={refs.setReference}
               {...getReferenceProps()}
             >
               <FaCaretDown className="text-secondary" />
               <Avatar />
             </button>
+            <button
+              className="sm:hidden text-red-500 text-start"
+              onClick={() => {
+                logOut();
+                setMenuOpen(false);
+              }}
+            >
+              Log out
+            </button>
           </>
         ) : (
-          <NavLink
+          <MenuNavLink
             to="/login"
             className={(props) =>
-              clsx("ml-auto text-primary", getLinkClassNames(props))
+              clsx("sm:ml-auto text-primary", getLinkClassNames(props))
             }
           >
             <div className="flex items-center">
               <span>Log in</span>
               <FaArrowRight className="ml-2" />
             </div>
-          </NavLink>
+          </MenuNavLink>
         )}
       </nav>
 
-      {open && (
+      {popoverOpen && (
         <div
           {...getFloatingProps()}
           style={floatingStyles}
@@ -81,9 +136,8 @@ export const Header = () => {
             className="hover:bg-light transition-colors"
             startNode={<FaRightFromBracket />}
             onClick={() => {
-              tokenHandler.deleteToken();
-              refreshAuth();
-              setOpen(false);
+              logOut();
+              setPopoverOpen(false);
             }}
           >
             Log out
